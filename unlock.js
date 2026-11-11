@@ -26,10 +26,41 @@
   });
  }
 
- function mount(payload) {
+ async function prepareStyles(head) {
+  const styles = Array.from(head.querySelectorAll('link[rel~="stylesheet"]'), link => ({
+   link, media: link.getAttribute('media')
+  }));
+  try {
+   await Promise.all(styles.map(({ link }) => new Promise((resolve, reject) => {
+    link.addEventListener('load', resolve, { once: true });
+    link.addEventListener('error', reject, { once: true });
+    link.media = 'not all';
+    document.head.append(link);
+   })));
+  } catch (error) {
+   for (const { link } of styles) link.remove();
+   throw error;
+  }
+  return styles;
+ }
+
+ async function mount(payload) {
   const page = new DOMParser().parseFromString(payload.html, 'text/html');
   page.querySelectorAll('script').forEach(script => script.remove());
-  document.documentElement.replaceChildren(document.importNode(page.head, true), document.importNode(page.body, true));
+  const nextHead = document.importNode(page.head, true);
+  const nextBody = document.importNode(page.body, true);
+  const styles = await prepareStyles(nextHead);
+  // Leaflet reads the map's position and dimensions on startup.
+  const loaded = new Set(styles.map(({ link }) => link));
+  for (const child of [...document.head.childNodes]) {
+   if (!loaded.has(child)) child.remove();
+  }
+  document.head.prepend(...nextHead.childNodes);
+  for (const { link, media } of styles) {
+   if (media === null) link.removeAttribute('media');
+   else link.media = media;
+  }
+  document.body.replaceWith(nextBody);
   for (const code of [payload.data, payload.app]) {
    const script = document.createElement('script');
    script.textContent = code;
@@ -60,8 +91,9 @@
     return;
    }
    passwordInput.value = '';
+   status.textContent = '正在打开网站…';
    await loadLeaflet();
-   mount(payload);
+   await mount(payload);
   } catch {
    status.textContent = '网站暂时无法载入，请刷新后重试。';
   } finally {
