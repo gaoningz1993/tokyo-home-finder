@@ -1,0 +1,168 @@
+.dictionary-map-panel{background:#fff;border:1px solid #e0e8eb;border-radius:14px;margin:0 0 24px;overflow:hidden;scroll-margin-top:20px}
+.dictionary-map-header{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 20px;border-bottom:1px solid #e8eef0}
+.dictionary-map-header strong{font-size:14px;font-weight:600;color:#1f2e52}.dictionary-map-header span{font-size:11px;color:#8b9ba5;margin-left:15px}
+.dictionary-map-header .text-button{border:0;padding:5px}.dictionary-map-stage{position:relative;height:440px;background:#e9efef}
+#dictionaryMap{height:100%;width:100%;z-index:1}.dictionary-map-legend{position:absolute;z-index:410;left:16px;bottom:20px;display:flex;gap:15px;background:#fffffff2;border:1px solid #e4ebed;padding:10px 13px;border-radius:8px;font-size:10px;color:#647e88;box-shadow:0 3px 15px #1f2e5210}
+.dictionary-map-legend span{display:flex;align-items:center;gap:5px}.dictionary-map-legend i{width:7px;height:7px;border-radius:2px}
+.dictionary-map-help{font-size:11px;color:#90a0a9;padding:12px 20px;line-height:1.8}.dictionary-locate{font-size:11px;color:#078998;display:block;padding:10px 0 0;text-align:left}
+.dictionary-map-fallback{position:absolute;z-index:420;left:15px;right:15px;top:15px;padding:13px;background:#fffffff5;border:1px solid #d8e4e8;font-size:12px;color:#6f8791;border-radius:8px}
+.project-map-popup{font-family:inherit;color:#1f2e52;max-height:300px;overflow:auto}.popup-project{padding:10px 0}.popup-project strong{font-size:14px;font-weight:600}.popup-project p{font-size:11px;color:#647e88;margin:5px 0}.popup-project button{color:#078998;font-size:11px;padding:5px 0;text-align:left}
+.ark-provenance{font-size:10px;color:#8c7957;line-height:1.8;margin:8px 0;white-space:normal;max-width:330px}.ark-provenance strong{font-weight:500}.inventory-table .ark-provenance{font-size:9px;max-width:195px}.report-property-details .ark-provenance{font-size:9px}.unit-source-links a{overflow-wrap:anywhere}
+.source-checks{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0 7px}.source-check{font-size:10px;padding:5px 8px;border:1px solid #dbe8e9;border-radius:5px;white-space:nowrap}.source-check b{font-weight:600;margin-right:3px}.checked-found{background:#eff8f7;color:#48878b}.checked-empty{background:#f5f2eb;color:#9a896a;border-color:#e9e2d4}.source-check-date{font-size:9px;line-height:1.8;color:#98a8af;margin-bottom:10px}.source-coverage-scroll{overflow:auto;max-width:100%;border:1px solid #e3eaed;border-radius:8px;margin:15px 0}.source-coverage-table{width:100%;min-width:700px;border-collapse:collapse;font-size:11px}.source-coverage-table th,.source-coverage-table td{padding:12px 13px;border-bottom:1px solid #e8edef;text-align:left;vertical-align:top}.source-coverage-table th{background:#f2f7f8;font-weight:500;color:#7e939c}.source-coverage-table td:first-child{min-width:190px}.source-coverage-table small{display:block;font-size:9px;line-height:1.9;color:#99a8af;max-width:230px;margin-top:4px}.source-coverage-table button{text-align:left;padding:0;font-size:11px;color:#247e8a}.found-outcome{color:#518b8e;font-weight:500}.empty-outcome{color:#a08b61;font-weight:500}.dictionary-bottom>span{font-size:10px}.source-content li{overflow-wrap:anywhere}
+#sourceDialog{width:min(1080px,calc(100vw - 30px));max-width:none}
+@media(max-width:700px){.source-check{font-size:9px;padding:5px 6px}.source-check-date{font-size:9px}.dictionary-toolbar{flex-wrap:wrap}.dictionary-toolbar .search-input-wrap{flex-basis:100%}.dictionary-toolbar>.secondary-button{margin-top:4px}.source-coverage-table{min-width:690px}.dictionary-card .source-checks{margin-top:12px}}
+@media(max-width:700px){.dictionary-toolbar{gap:9px}.dictionary-toolbar .secondary-button{font-size:10px;white-space:nowrap;padding:9px}.dictionary-map-stage{height:360px}.dictionary-map-header{padding:12px}.dictionary-map-header strong{font-size:13px}.dictionary-map-header span{font-size:9px;margin-left:8px}.dictionary-map-legend{left:10px;bottom:20px;gap:10px;font-size:8px;padding:8px 10px}.dictionary-map-help{font-size:10px;padding:11px 13px}.dictionary-locate{font-size:11px}.dictionary-map-panel{margin-bottom:18px}.dictionary-map-header .text-button{font-size:10px}}
+
+:root {
+ --reins-brand: #d9b766;
+ --ark-brand: #06aabd;
+ --reins-soft: #faf2df;
+ --ark-soft: #f2f9f9;
+}
+.source-reins {
+ --source-fill: var(--reins-brand);
+ --source-light: var(--reins-soft);
+}
+.source-ark {
+ --source-fill: var(--ark-brand);
+ --source-light: var(--ark-soft);
+}
+.source-overlap { --source-fill: var(--navy); }
+.source-both {
+ --source-fill: linear-gradient(90deg, var(--reins-brand) 50%, var(--ark-brand) 50%);
+ --source-light: linear-gradient(90deg, var(--reins-soft) 50%, var(--ark-soft) 50%);
+}
+.source-empty {
+ --source-fill: #dce4e8;
+ --source-light: #f4f8f9;
+}
+.map-legend, .dictionary-map-legend { pointer-events: none; }
+.map-legend .source-key, .dictionary-map-legend .source-key {
+ width: 10px;
+ height: 9px;
+ border-radius: 2px;
+ background: var(--source-fill);
+}
+.marker-pill.project-map-marker {
+ display: flex;
+ flex-direction: column;
+ align-items: stretch;
+ width: 100%;
+ height: 100%;
+ padding: 0;
+ overflow: hidden;
+ border: 1px solid #fff;
+ border-radius: 4px;
+ background: #fffffff2;
+ color: var(--navy);
+ transform: none;
+ white-space: normal;
+ box-shadow: 0 2px 8px #1f2e5240;
+}
+.marker-pill.project-map-marker::after { display: none; }
+.marker-pill.project-map-marker:hover,
+.marker-pill.project-map-marker.highlighted {
+ background: #fff;
+ transform: none;
+ box-shadow: 0 0 0 2px var(--navy), 0 2px 8px #1f2e5240;
+}
+.project-map-marker strong {
+ display: block;
+ margin: auto 3px;
+ max-height: 2.2em;
+ overflow: hidden;
+ font-size: 9.5px;
+ font-weight: 700;
+ line-height: 1.1;
+ text-wrap: balance;
+}
+.project-map-source-bar {
+ display: flex;
+ flex: 0 0 12px;
+ line-height: 12px;
+}
+.project-map-source-bar > span {
+ flex: 1 1 0;
+ min-width: 0;
+ overflow: hidden;
+ background: var(--source-fill);
+ color: var(--navy);
+ font-size: 8px;
+ font-weight: 700;
+ font-variant-numeric: tabular-nums;
+ text-align: center;
+}
+.project-map-source-bar > .source-overlap { color: #fff; }
+.compact-map-marker .project-map-source-bar { flex: 1; }
+.compact-map-marker .project-map-source-bar > span { font-size: 0; }
+.map-project-entries { display: grid; gap: 4px; }
+.project-source-summary,
+.tag.listing-source,
+.source-check.checked-found,
+.source-coverage-table .found-outcome {
+ color: var(--navy);
+ background: var(--source-fill);
+}
+.source-coverage-table .found-outcome {
+ display: inline-block;
+ padding: 3px 6px;
+ border-radius: 4px;
+}
+.checked-empty {
+ color: #526276;
+ background: #f4f7f8;
+ border-color: #dce4e8;
+}
+.empty-outcome, .ark-provenance { color: #526276; }
+.project-source-summary {
+ display: inline-block;
+ padding: 5px 8px;
+ border-radius: 5px;
+ font-weight: 600;
+}
+.detail-tabs { gap: 6px; }
+.detail-tabs button {
+ flex: 1;
+ padding: 11px 5px;
+ border-radius: 5px 5px 0 0;
+ color: var(--navy);
+}
+.detail-tabs button.active { border-bottom-color: var(--navy); }
+.detail-units-tab { background: var(--source-fill); }
+.detail-floors-tab { background: var(--source-light); }
+.tower-menu, .unit-source-menu {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 7px;
+ margin: 0 0 12px;
+}
+.tower-menu button, .unit-source-menu button {
+ background: var(--source-fill, #f2f5f7);
+ border: 1px solid #1f2e5226;
+ border-radius: 5px;
+ padding: 8px 10px;
+ color: var(--navy);
+ font-size: 11px;
+ font-weight: 600;
+}
+.unit-source-menu button { flex: 1 1 auto; }
+.tower-menu button[aria-pressed="true"],
+.unit-source-menu button[aria-pressed="true"] {
+ border-color: var(--navy);
+ box-shadow: inset 0 -2px var(--navy);
+}
+.real-floor-row { background: var(--source-light); }
+.real-floor-row > strong { background: transparent; color: var(--navy); }
+.real-floor-unit, .real-floor-unit.selected {
+ background: var(--source-light);
+ color: var(--navy);
+ border-color: #1f2e522e;
+}
+.real-floor-unit small { color: #526276; }
+.real-floor-unit.selected { border-color: var(--navy); }
+@media(max-width:700px) {
+ .project-map-marker strong { font-size: 9px; }
+}
+@media(max-width:380px) {
+ .dictionary-map-stage, .map-shell { height: 445px; }
+}

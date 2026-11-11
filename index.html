@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>东京找房超级工具</title>
+  <style>
+    body { margin: 0; min-height: 100svh; display: grid; place-items: center; background: #f1f6f7; color: #1f2e52; font: 16px/1.5 system-ui,sans-serif; }
+    main { box-sizing: border-box; width: min(420px,calc(100% - 32px)); padding: 36px; background: #fff; border: 1px solid #dce8ea; border-radius: 18px; box-shadow: 0 16px 50px #1f2e5212; }
+    small { font-size: 12px; letter-spacing: .15em; color: #087884; }
+    h1 { font-size: 26px; margin: 8px 0; }
+    p { color: #4f6371; }
+    label { font-size: 14px; font-weight: 600; display: block; margin: 20px 0 6px; }
+    input, button { box-sizing: border-box; width: 100%; padding: 12px; border-radius: 8px; font: inherit; }
+    input { border: 1px solid #8298a3; }
+    button { margin-top: 14px; border: 0; background: #1f2e52; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    input:focus-visible, button:focus-visible { outline: 3px solid #06aabd; outline-offset: 2px; }
+    #unlock-status { font-size: 14px; color: #9a2a20; }
+  </style>
+  <script defer src="unlock.js"></script>
+</head>
+<body>
+  <main>
+    <small>TOKYO HOME FINDER</small>
+    <h1>东京找房超级工具</h1>
+    <p>员工内部使用 · 输入访问密码继续</p>
+    <form id="unlock-form">
+      <label for="access-password">访问密码</label>
+      <input id="access-password" type="password" autocomplete="current-password" maxlength="128" required>
+      <button type="submit">进入网站</button>
+    </form>
+    <p id="unlock-status" role="status"></p>
+  </main>
+</body>
+</html>
